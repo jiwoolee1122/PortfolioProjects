@@ -2,7 +2,7 @@
 
 -- 1. 회사의 성장을 보여줄 수 있도록 Gsearch 세션 및 주문에 대한 월별 추세를 보여주세요
 select
-	year(website_sessions.created_at) as yr,
+    year(website_sessions.created_at) as yr,
     month(website_sessions.created_at) as mo,
     count(distinct website_sessions.website_session_id) as sessions,
     count(distinct orders.order_id) as orders,
@@ -17,7 +17,7 @@ group by 1,2;
 -- 2. 이번에는 Gsearch에서 nonbrand 캠페인과 brand 캠페인을 따로 분리하여 보여주세요
 
 select
-	year(website_sessions.created_at) as yr,
+    year(website_sessions.created_at) as yr,
     month(website_sessions.created_at) as mo,
     count(distinct case when utm_campaign = 'nonbrand' then website_sessions.website_session_id else null end) as nonbrand_sessions,
     count(distinct case when utm_campaign = 'nonbrand' then orders.order_id else null end) as nonbrand_orders,
@@ -33,7 +33,7 @@ group by 1,2;
 -- 3. Gsearch, nonbrand에서 기기 유형별로 분할된 월별 세션 및 주문을 보여주세요
 
 select
-	year(website_sessions.created_at) as yr,
+    year(website_sessions.created_at) as yr,
     month(website_sessions.created_at) as mo,
     count(case when device_type = 'desktop' then website_sessions.website_session_id else null end) as desktop_sessions,
     count(case when device_type = 'desktop' then orders.order_id else null end) as desktop_orders,
@@ -50,12 +50,12 @@ group by 1,2;
 -- 4. 다른 각 채널에서 월별 트렌드와 함께 Gsearch의 월별 트렌드를 보여주세요
 
 select
-	distinct utm_source, utm_campaign, http_referer
+    distinct utm_source, utm_campaign, http_referer
 from website_sessions
 where created_at < '2012-11-27'; -- 채널: gsearch, bsearch, organic_search, direct_type
 
 select
-	year(created_at) as yr,
+    year(created_at) as yr,
     month(created_at) as mo,
     count(case when utm_source = 'gsearch' then website_session_id else null end) as gsearch_sessions,
     count(case when utm_source = 'bsearch' then website_session_id else null end) as bsearch_sessions,
@@ -69,7 +69,7 @@ where created_at < '2012-11-27';
 -- 그 이후의 세션 및 수익을 사용하여 증분 값을 보여주세요.
 
 select
-	min(website_pageview_id)
+    min(website_pageview_id)
 from website_pageviews
 where pageview_url = '/lander-1';
 
@@ -78,7 +78,7 @@ where pageview_url = '/lander-1';
 -- 각 세션의 첫 번째 pageview id 찾기
 with cte as (
 select
-	website_sessions.website_session_id,
+    website_sessions.website_session_id,
     min(website_pageview_id) as first_pageview_id
 from website_sessions
 	left join website_pageviews
@@ -92,7 +92,7 @@ group by 1),
 -- /home, /lander-1 page 가져오기
 cte2 as (
 select
-	cte.website_session_id,
+    cte.website_session_id,
     pageview_url as landing_page
 from cte
 	left join website_pageviews
@@ -101,7 +101,7 @@ where pageview_url in ('/home', '/lander-1')),
 
 cte3 as (
 select
-	cte2.website_session_id,
+    cte2.website_session_id,
     cte2.landing_page,
     orders.order_id
 from cte2
@@ -110,7 +110,7 @@ from cte2
 
 -- /home과 /lander-1 간에 전환율 비교
 select
-	landing_page,
+    landing_page,
     count(distinct website_session_id) as sessions,
     count(distinct order_id) as orders,
     count(distinct order_id)/count(distinct website_session_id) as conv_rate
@@ -122,19 +122,19 @@ group by 1;
 -- gsearch, nonbrand의 가장 마지막으로 사용된 /home의 세션 아이디 찾기
 
 select
-	max(website_sessions.website_session_id)
+    max(website_sessions.website_session_id)
 from website_sessions
 	left join website_pageviews
 		on website_sessions.website_session_id = website_pageviews.website_session_id
 where website_sessions.created_at < '2012-11-27'
-	and utm_source = 'gsearch'
+    and utm_source = 'gsearch'
     and utm_campaign = 'nonbrand'
     and pageview_url = '/home';
     
 -- gsearch, nonbrand에서 /home의 가장 마지막 세션아이디: 17145
 
 select
-	count(website_session_id)
+    count(website_session_id)
 from website_sessions
 where created_at < '2012-11-27'
 	and utm_source = 'gsearch'
@@ -150,18 +150,18 @@ where created_at < '2012-11-27'
 
 -- 페이지 확인
 select
-	distinct pageview_url
+    distinct pageview_url
 from website_sessions
 	left join website_pageviews
 		on website_sessions.website_session_id = website_pageviews.website_session_id
 where website_pageview_id >= 23504
-	and website_sessions.created_at < '2012-07-28'
+    and website_sessions.created_at < '2012-07-28'
     and utm_source = 'gsearch'
     and utm_campaign = 'nonbrand';
 
 create temporary table page_1
 select
-	website_session_id,
+    website_session_id,
     max(homepage) as homepage,
     max(lander1_page) as lander1_page,
     max(products_page) as products_page,
@@ -172,7 +172,7 @@ select
     max(thankyou_page) as thankyou_page
 from(
 select
-	website_sessions.website_session_id,
+    website_sessions.website_session_id,
     case when pageview_url = '/home' then 1 else 0 end as homepage,
     case when pageview_url = '/lander-1' then 1 else 0 end as lander1_page,
     case when pageview_url = '/products' then 1 else 0 end as products_page,
@@ -185,16 +185,16 @@ from website_sessions
 	left join website_pageviews
 		on website_sessions.website_session_id = website_pageviews.website_session_id
 where website_pageview_id >= 23504
-	and website_sessions.created_at < '2012-07-28'
+    and website_sessions.created_at < '2012-07-28'
     and utm_source = 'gsearch'
     and utm_campaign = 'nonbrand') as pageview_level
 group by 1;
 
 select
-	case
-		when homepage = 1 then 'homepage'
-        when lander1_page = 1 then 'lander1_page'
-	end as segment,
+    case
+	when homepage = 1 then 'homepage'
+    when lander1_page = 1 then 'lander1_page'
+    end as segment,
     count(website_session_id) as sessions,
     sum(products_page) as to_products,
     sum(mrfuzzy_page) as to_mrfuzzy,
@@ -207,10 +207,10 @@ group by 1;
 
 -- 클릭률
 select
-	case
-		when homepage = 1 then 'homepage'
-        when lander1_page = 1 then 'lander1_page'
-	end as segment,
+    case
+	when homepage = 1 then 'homepage'
+    when lander1_page = 1 then 'lander1_page'
+    end as segment,
     sum(products_page)/count(website_session_id) as lander_click_rt,
     sum(mrfuzzy_page)/sum(products_page) as products_click_rt,
     sum(cart_page)/sum(mrfuzzy_page) as mrfuzzy_click_rt,
@@ -225,14 +225,14 @@ group by 1;
 -- 지난 한 달 동안의 청구 페이지 세션 수를 가져와 수익에 미친 영향을 알려주세요.
 
 select
-	pageview_url as billing_page,
+    pageview_url as billing_page,
     count(website_pageviews.website_session_id) as sessions,
     sum(price_usd)/count(website_pageviews.website_session_id) as revenue_per_billing_page
 from website_pageviews
 	left join orders
 		on website_pageviews.website_session_id = orders.website_session_id
 where website_pageviews.created_at < '2012-11-10'
-	and website_pageviews.created_at > '2012-09-10'
+    and website_pageviews.created_at > '2012-09-10'
     and pageview_url in ('/billing', '/billing-2')
 group by 1;
 
@@ -241,7 +241,7 @@ group by 1;
 -- 차이 : $8.51
 
 select
-	count(website_session_id)
+    count(website_session_id)
 from website_pageviews
 where website_pageviews.pageview_url in ('/billing', '/billing-2')
 	and created_at between '2012-10-27' and '2012-11-27'
