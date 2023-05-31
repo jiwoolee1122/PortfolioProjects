@@ -116,7 +116,7 @@ select
     count(distinct case when cross_sell_product_id = 4 then order_id else null end)/count(distinct order_id) as p4_cross_sell_rt
 from(
 select
-	cte.*,
+    cte.*,
     order_items.product_id as cross_sell_product_id
 from cte
 	left join order_items
