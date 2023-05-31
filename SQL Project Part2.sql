@@ -3,7 +3,7 @@
 -- 1. 볼륨 성장을 보여주기 위해 분기별로 전체 세션 및 주문량을 보여주세요
 
 select
-	year(website_sessions.created_at) as yr,
+    year(website_sessions.created_at) as yr,
     quarter(website_sessions.created_at) as qtr,
     count(distinct website_sessions.website_session_id) as sessions,
     count(distinct orders.order_id) as orders
@@ -15,7 +15,7 @@ group by 1,2;
 -- 2. 다음으로 분기별로 세션-주문 전환율, 주문당 수익 및 세션당 수익에 대해 보여주세요
 
 select
-	year(website_sessions.created_at) as yr,
+    year(website_sessions.created_at) as yr,
     quarter(website_sessions.created_at) as qtr,
     count(orders.order_id)/count(website_sessions.website_session_id) as session_to_order_conv_rate,
     sum(price_usd)/count(orders.order_id) as revenue_per_order,
@@ -28,7 +28,7 @@ group by 1,2;
 -- 3. 각 채널에 대한 전체 세션 세션-주문 전환율 추세를 분기별로 보여주세요
 
 select
-	year(website_sessions.created_at) as yr,
+    year(website_sessions.created_at) as yr,
     quarter(website_sessions.created_at) as qtr,
     count(case when utm_source = 'gsearch' and utm_campaign = 'nonbrand' then orders.order_id else null end)
 		/ count(case when utm_source = 'gsearch' and utm_campaign = 'nonbrand' then website_sessions.website_session_id else null end) as gsearch_nonbrand_conv_rt,
@@ -48,7 +48,7 @@ group by 1,2;
 -- 4. 총 판매 및 수익과 함께 제품별 수익 및 마진에 대한 월별 추세를 보여주세요
 
 select
-	year(created_at) as yr,
+    year(created_at) as yr,
     month(created_at) as mo,
     sum(case when product_id = 1 then price_usd else null end) as mrfuzzy_rev,
     sum(case when product_id = 1 then price_usd - cogs_usd else null end) as mrfuzzy_marg,
@@ -67,16 +67,17 @@ group by 1,2;
 -- 다른 페이지를 통해 클릭하는 세션의 %가 시간 경과에 따라 어떻게 변했는지
 -- 보여주고, /products에서 주문으로의 전환을 보여주세요
 
+-- 먼저 /products 페이지의 모든 보기를 식별한다.
 with cte as (
 select
-	website_session_id,
+    website_session_id,
     website_pageview_id,
     created_at
 from website_pageviews
 where pageview_url = '/products')
 
 select
-	year(cte.created_at) as yr,
+    year(cte.created_at) as yr,
     month(cte.created_at) as mo,
     count(distinct cte.website_session_id) as sessions_to_product_page,
     count(distinct website_pageviews.website_session_id) as clicked_to_next_page,
@@ -96,14 +97,14 @@ group by 1,2;
 
 with cte as (
 select
-	order_id,
+    order_id,
     primary_product_id,
     created_at
 from orders
 where created_at > '2014-12-05')
 
 select
-	primary_product_id,
+    primary_product_id,
     count(distinct order_id) as total_orders,
     count(distinct case when cross_sell_product_id = 1 then order_id else null end) as cross_sold_p1,
     count(distinct case when cross_sell_product_id = 2 then order_id else null end) as cross_sold_p2,
