@@ -65,8 +65,7 @@ from website_sessions
 where created_at < '2012-11-27';
 
 -- 5. Gsearch, nonbrand landing page 테스트를 통해 얻은 수익을 추정해서 보여주세요
--- /lander-1이 처음 나왔을 때 부터 2012년 7월 28일까지의 CVR 증가를 살펴보고, 
--- 그 이후의 세션 및 수익을 사용하여 증분 값을 보여주세요.
+-- /lander-1이 처음 나왔을 때 부터 2012년 7월 28일까지의 CVR 증가를 보여주세요
 
 select
     min(website_pageview_id)
@@ -118,32 +117,6 @@ from cte3
 group by 1;
 
 -- 전환율: /home - 0.0318, /lander-1 - 0.0406 (0.0088 차이)
-
--- gsearch, nonbrand의 가장 마지막으로 사용된 /home의 세션 아이디 찾기
-
-select
-    max(website_sessions.website_session_id)
-from website_sessions
-	left join website_pageviews
-		on website_sessions.website_session_id = website_pageviews.website_session_id
-where website_sessions.created_at < '2012-11-27'
-    and utm_source = 'gsearch'
-    and utm_campaign = 'nonbrand'
-    and pageview_url = '/home';
-    
--- gsearch, nonbrand에서 /home의 가장 마지막 세션아이디: 17145
-
-select
-    count(website_session_id)
-from website_sessions
-where created_at < '2012-11-27'
-	and utm_source = 'gsearch'
-    and utm_campaign = 'nonbrand'
-    and website_session_id > 17155; -- 마지막 /home 세션
-    
--- 마지막 /home세션 다음 부터 2012년 11월 27일 까지 세션의 수는 22,962개
--- 위의 /home과 /lander-1의 전환율 비교로 계산을 해보면 7월 29일 부터 약 202개가 늘었다
--- 한 달마다 주문이 50개 정도의 상승이 있다.
 
 -- 6. 이전에 분석한 랜딩 페이지 테스트의 경우 두 페이지 각각에서 주문까지의 전체 전환 퍼널을 표시해 주세요.
 -- 동일하게 /lander-1이 처음 나왔을 때 부터 2012년 7월 28일까지의 기간으로 분석해 주세요.
